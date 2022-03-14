@@ -1,4 +1,4 @@
-package com.ai.ai
+package com.ai.ai.linear
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -13,9 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.ai.ai.ui.theme.AIAppTheme
-import com.google.firebase.FirebaseApp
 import dagger.hilt.android.AndroidEntryPoint
-import org.tensorflow.lite.Interpreter
 
 @AndroidEntryPoint
 class LinearMLActivity : ComponentActivity() {

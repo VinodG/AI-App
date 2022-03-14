@@ -1,7 +1,9 @@
 package com.ai.ai.di
 
-import com.ai.ai.data.NetworkUrl
+//import okhttp3.OkHttpClient
+
 import com.ai.ai.data.Api
+import com.ai.ai.data.NetworkUrl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -11,6 +13,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
+
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -35,10 +38,11 @@ class AppModule {
     @Provides
     fun retrofitBuilder(client: OkHttpClient, factory: GsonConverterFactory): Api =
         Retrofit.Builder()
-            .baseUrl(NetworkUrl.FIREBASE_STORAGE_BASE_URL)
+            .baseUrl(NetworkUrl.LOCAL_URL)
             .client(client)
             .addConverterFactory(factory)
             .build()
             .create(Api::class.java)
+
 
 }

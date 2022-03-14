@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".digits.DigitsRecognitionActivity">
+
+        <com.ai.ai.digits.PaintView
+            android:id="@+id/paintView"
+            android:layout_width="200dp"
+            android:layout_height="200dp" />
+
+        <Button
+            android:id="@+id/btnClear"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Clear" />
+
+        <Button
+            android:id="@+id/btnClassify"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Classify" />
+
+        <ImageView
+            android:id="@+id/ivPreview"
+            android:layout_width="60dp"
+            android:layout_height="60dp" />
+
+
+    </LinearLayout>
+</layout>

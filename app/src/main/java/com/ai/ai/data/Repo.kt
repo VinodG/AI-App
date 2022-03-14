@@ -11,7 +11,7 @@ import javax.inject.Inject
 class Repo @Inject constructor(var api: Api, @ApplicationContext var context: Context) {
     suspend fun download(): String? {
         var filePath: String? = null
-        api.downloadModel4().apply {
+        api.downloadLocalV4("2").apply {
             if (isSuccessful) {
                 var input: InputStream? = body()?.byteStream()
                 val file = File(context.filesDir, "linearx.tflite")
@@ -24,9 +24,11 @@ class Repo @Inject constructor(var api: Api, @ApplicationContext var context: Co
                     }
                     output.flush()
                 }
+                fos.close()
                 filePath = file.absolutePath
             }
         }
+        println("filepath : $filePath")
         return filePath
     }
 }
