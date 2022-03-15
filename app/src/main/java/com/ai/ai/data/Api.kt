@@ -11,4 +11,7 @@ interface Api {
 
     @GET(NetworkUrl.DOWNLOAD_V4 + "/{number}")
     suspend fun downloadLocalV4(@Path("number") number: String): Response<ResponseBody>
+
+    @GET(NetworkUrl.MNIST_DIGITS_1 + "/{number}")
+    suspend fun downloadLocalMnistDigits(@Path("number") number: String): Response<ResponseBody>
 }

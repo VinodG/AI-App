@@ -9,7 +9,7 @@ object NetworkUrl {
     //    http://192.168.0.104:8080/download
 
 
-    const val LOCAL_URL = "http://192.168.117.11:8080/"
-    const val DOWNLOAD_V4: String =
-        "download"
+    const val LOCAL_URL = "http://192.168.117.9:8080/"
+    const val DOWNLOAD_V4: String = "download"
+    const val MNIST_DIGITS_1: String = "download/mnist"
 }
