@@ -23,6 +23,7 @@ class DigitsRecognitionActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_digits_recognition)
+        binding.state = None
         setClickListeners()
         setObserver()
     }
@@ -48,6 +49,9 @@ class DigitsRecognitionActivity : AppCompatActivity() {
                 paintView.clear()
             }
             btnRetry.setOnClickListener {
+                viewModel.downloadModel()
+            }
+            btnDownload.setOnClickListener {
                 viewModel.downloadModel()
             }
         }

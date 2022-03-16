@@ -44,9 +44,6 @@ class DigitRecognitionViewModel @Inject constructor(
     var _apiResponse: MutableStateFlow<ApiStatus> = MutableStateFlow(ApiStatus.Loading)
     var apiResponse: StateFlow<ApiStatus> = _apiResponse
 
-    init {
-        downloadModel()
-    }
 
     /*private fun loadModelFromAsset(): MappedByteBuffer? {
         var assetFileDescriptor = context.assets.openFd("mnist.tflite")
@@ -144,6 +141,7 @@ class DigitRecognitionViewModel @Inject constructor(
     sealed class ApiStatus {
         object Loading : ApiStatus()
         object Success : ApiStatus()
+        object None : ApiStatus()
         data class Error(var exception: Exception) : ApiStatus()
     }
 
