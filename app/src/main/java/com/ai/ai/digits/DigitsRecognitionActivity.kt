@@ -1,20 +1,29 @@
 package com.ai.ai.digits
 
-import android.graphics.Bitmap
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import com.ai.ai.R
 import com.ai.ai.databinding.ActivityDigitsRecognitionBinding
-import com.ai.ai.digits.DigitRecognitionViewModel.*
 import com.ai.ai.digits.DigitRecognitionViewModel.ApiStatus.*
+import com.github.mikephil.charting.components.XAxis
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import kotlin.Error
+import com.github.mikephil.charting.data.BarData
+
+import com.github.mikephil.charting.data.BarDataSet
+
+import com.github.mikephil.charting.data.BarEntry
+
+import java.util.ArrayList
+import com.github.mikephil.charting.components.AxisBase
+import com.github.mikephil.charting.components.LegendEntry
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.github.mikephil.charting.formatter.ValueFormatter
+
 
 @AndroidEntryPoint
 class DigitsRecognitionActivity : AppCompatActivity() {
@@ -29,11 +38,10 @@ class DigitsRecognitionActivity : AppCompatActivity() {
     }
 
     private fun setObserver() {
-        lifecycleScope.launchWhenStarted {
+        lifecycleScope.launch {
             viewModel.apiResponse.collect {
                 binding.state = it
             }
-
         }
     }
 
@@ -42,7 +50,9 @@ class DigitsRecognitionActivity : AppCompatActivity() {
             btnClassify.setOnClickListener {
                 var bitmap = paintView.getBitmap()
                 ivPreview.setImageBitmap(bitmap)
-                tvResult.text = viewModel.doInference(bitmap!!).toString()
+                var (probabilities, digit) = viewModel.doInference(bitmap!!)
+                tvResult.text = digit.toString()
+                showBarChart(probabilities)
                 paintView.clear()
             }
             btnClear.setOnClickListener {
@@ -55,6 +65,25 @@ class DigitsRecognitionActivity : AppCompatActivity() {
                 viewModel.downloadModel()
             }
         }
+    }
+
+    private fun showBarChart(probabilities: FloatArray) {
+        val title = "Probabilities"
+        val barDataSet = BarDataSet(probabilities.mapIndexed { index, value ->
+            BarEntry(
+                index.toFloat(),
+                value
+            )
+        }, title)
+        binding.chart.setScaleEnabled(false)
+        binding.chart.data = BarData(barDataSet)
+        binding.chart.xAxis?.let {
+            it.setAvoidFirstLastClipping(false)
+            it.position = XAxis.XAxisPosition.BOTTOM
+            it.setDrawGridLines(false)
+        }
+        binding.chart.description.isEnabled =false
+        binding.chart.invalidate()
     }
 
 }

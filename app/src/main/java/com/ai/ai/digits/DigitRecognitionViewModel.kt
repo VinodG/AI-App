@@ -41,8 +41,10 @@ class DigitRecognitionViewModel @Inject constructor(
 
     //    private var interpreter = Interpreter(loadModelFromAsset()!!, 1)
     private var interpreter: Interpreter? = null // Interpreter(loadModelFromAsset()!!, 1)
-    var _apiResponse: MutableStateFlow<ApiStatus> = MutableStateFlow(ApiStatus.Loading)
+    private var _apiResponse: MutableStateFlow<ApiStatus> = MutableStateFlow(ApiStatus.Loading)
     var apiResponse: StateFlow<ApiStatus> = _apiResponse
+    private var _probabilities: MutableStateFlow<List<Float>> = MutableStateFlow(listOf<Float>())
+    var probabilities: StateFlow<List<Float>> = _probabilities
 
 
     /*private fun loadModelFromAsset(): MappedByteBuffer? {
@@ -54,7 +56,7 @@ class DigitRecognitionViewModel @Inject constructor(
         return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffSet, length)
     }*/
 
-    fun doInference(bitmap: Bitmap): Int {
+    fun doInference(bitmap: Bitmap): Pair<FloatArray, Int> {
         return interpreter?.let { interpreter ->
             var bitmap = Bitmap.createScaledBitmap(
                 bitmap,
@@ -73,9 +75,13 @@ class DigitRecognitionViewModel @Inject constructor(
             val result = Array(1) { FloatArray(OUTPUT_CLASSES_COUNT) }
             val byteBuffer = convertBitmapToByteBuffer(bitmap)
             interpreter.run(byteBuffer, result)
+            viewModelScope.launch {
+                _probabilities.emit(result[0].toList())
+            }
+
             println(TAG + " ${result[0].map { it.toString() }.joinToString { "$it" }}")
-            result[0].indices.maxByOrNull { result[0][it] } ?: -1
-        } ?: -1
+            Pair(result[0], result[0].indices.maxByOrNull { result[0][it] } ?: -1)
+        } ?: Pair(floatArrayOf(), -1)
     }
 
     private fun loadModelFromApp(filePath: String): MappedByteBuffer? {

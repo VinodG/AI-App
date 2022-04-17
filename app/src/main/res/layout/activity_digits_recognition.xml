@@ -20,44 +20,56 @@
         android:orientation="vertical"
         tools:context=".digits.DigitsRecognitionActivity">
 
-        <com.ai.ai.digits.PaintView
-            android:id="@+id/paintView"
-            android:layout_width="200dp"
-            android:layout_height="200dp" />
-
-        <Button
-            android:id="@+id/btnClear"
+        <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Clear" />
+            android:orientation="horizontal">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            <com.ai.ai.digits.PaintView
+                android:id="@+id/paintView"
+                android:layout_width="200dp"
+                android:layout_height="200dp" />
 
-            <Button
-                android:id="@+id/btnClassify"
+            <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Classify"
-                android:visibility='@{(state instanceof ApiStatus.Success) ? View.VISIBLE : View.GONE}' />
+                android:orientation="vertical">
 
-            <ProgressBar
-                android:id="@+id/progressBar"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:visibility='@{(state instanceof ApiStatus.Loading) ? View.VISIBLE : View.GONE}' />
+                <Button
+                    android:id="@+id/btnClear"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Clear" />
 
-            <Button
-                android:id="@+id/btnRetry"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Retry"
-                android:visibility='@{(state instanceof ApiStatus.Error) ? View.VISIBLE : View.GONE}' />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
+                    <Button
+                        android:id="@+id/btnClassify"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Classify"
+                        android:visibility='@{(state instanceof ApiStatus.Success) ? View.VISIBLE : View.GONE}' />
 
-        </LinearLayout>
+                    <ProgressBar
+                        android:id="@+id/progressBar"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:visibility='@{(state instanceof ApiStatus.Loading) ? View.VISIBLE : View.GONE}' />
+
+                    <Button
+                        android:id="@+id/btnRetry"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Retry"
+                        android:visibility='@{(state instanceof ApiStatus.Error) ? View.VISIBLE : View.GONE}' />
+                </LinearLayout>
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
 
         <Button
             android:id="@+id/btnDownload"
@@ -68,8 +80,9 @@
 
         <ImageView
             android:id="@+id/ivPreview"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center" />
 
         <TextView
@@ -79,6 +92,11 @@
             android:gravity="center"
             android:textSize="24sp"
             android:textStyle="bold" />
+
+        <com.github.mikephil.charting.charts.BarChart
+            android:id="@+id/chart"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
 
     </LinearLayout>
