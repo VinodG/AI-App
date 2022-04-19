@@ -15,7 +15,9 @@ import com.google.firebase.ml.modeldownloader.FirebaseModelDownloader
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.tensorflow.lite.Interpreter
@@ -43,8 +45,8 @@ class DigitRecognitionViewModel @Inject constructor(
     private var interpreter: Interpreter? = null // Interpreter(loadModelFromAsset()!!, 1)
     private var _apiResponse: MutableStateFlow<ApiStatus> = MutableStateFlow(ApiStatus.Loading)
     var apiResponse: StateFlow<ApiStatus> = _apiResponse
-    private var _probabilities: MutableStateFlow<List<Float>> = MutableStateFlow(listOf<Float>())
-    var probabilities: StateFlow<List<Float>> = _probabilities
+    private var _probabilities: MutableSharedFlow<List<Float>> = MutableSharedFlow()
+    var probabilities: SharedFlow<List<Float>> = _probabilities
 
 
     /*private fun loadModelFromAsset(): MappedByteBuffer? {
@@ -75,7 +77,7 @@ class DigitRecognitionViewModel @Inject constructor(
             val result = Array(1) { FloatArray(OUTPUT_CLASSES_COUNT) }
             val byteBuffer = convertBitmapToByteBuffer(bitmap)
             interpreter.run(byteBuffer, result)
-            viewModelScope.launch {
+            viewModelScope.launch(Dispatchers.IO) {
                 _probabilities.emit(result[0].toList())
             }
 

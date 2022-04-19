@@ -1,6 +1,7 @@
 package com.ai.ai.digits
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -38,9 +39,14 @@ class DigitsRecognitionActivity : AppCompatActivity() {
     }
 
     private fun setObserver() {
-        lifecycleScope.launch {
+        lifecycleScope.launchWhenStarted {
             viewModel.apiResponse.collect {
                 binding.state = it
+            }
+        }
+        lifecycleScope.launchWhenStarted {
+            viewModel.probabilities.collect {
+                Log.e("ssss", "setObserver: " + it.joinToString { "," })
             }
         }
     }
@@ -82,7 +88,7 @@ class DigitsRecognitionActivity : AppCompatActivity() {
             it.position = XAxis.XAxisPosition.BOTTOM
             it.setDrawGridLines(false)
         }
-        binding.chart.description.isEnabled =false
+        binding.chart.description.isEnabled = false
         binding.chart.invalidate()
     }
 
