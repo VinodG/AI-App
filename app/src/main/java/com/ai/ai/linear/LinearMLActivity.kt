@@ -22,7 +22,7 @@ class LinearMLActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             AIAppTheme {
-                var inputValue = remember { mutableStateOf("10") }
+                var inputValue = remember { mutableStateOf("") }
                 var result = remember { mutableStateOf("0") }
 
                 Surface(color = MaterialTheme.colors.background) {
@@ -35,7 +35,10 @@ class LinearMLActivity : ComponentActivity() {
                             onValueChange = {
                                 inputValue.value = it
                             },
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
+                            placeholder = {
+                                Text(text = "X")
+                            }
                         )
                         Text(
                             text = "Result : ${result.value}",
@@ -61,21 +64,32 @@ class LinearMLActivity : ComponentActivity() {
                         if (vm.isLoading.value)
                             CircularProgressIndicator()
                         else
-                            Button(onClick = { vm.downloadModel() }) {
+                            Button(onClick = { vm.downloadModel(1 )}) {
                                 Text(
-                                    text = "Download Model",
+                                    text = "Download Model (2X)",
                                     modifier = Modifier.fillMaxWidth(),
                                     textAlign = TextAlign.Center
                                 )
                             }
                         Spacer(modifier = Modifier.height(16.dp))
-                        Button(onClick = { vm.loadFromAsset() }) {
-                            Text(
-                                text = "Load From Asset",
-                                modifier = Modifier.fillMaxWidth(),
-                                textAlign = TextAlign.Center
-                            )
-                        }
+                        if (vm.isLoading.value)
+                            CircularProgressIndicator()
+                        else
+                            Button(onClick = { vm.downloadModel(2) }) {
+                                Text(
+                                    text = "Download Model( 4X)",
+                                    modifier = Modifier.fillMaxWidth(),
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+//                        Spacer(modifier = Modifier.height(16.dp))
+//                        Button(onClick = { vm.loadFromAsset() }) {
+//                            Text(
+//                                text = "Load From Asset",
+//                                modifier = Modifier.fillMaxWidth(),
+//                                textAlign = TextAlign.Center
+//                            )
+//                        }
                     }
                 }
             }

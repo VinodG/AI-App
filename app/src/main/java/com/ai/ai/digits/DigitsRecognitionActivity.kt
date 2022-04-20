@@ -1,7 +1,9 @@
 package com.ai.ai.digits
 
+import android.opengl.Visibility
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -46,7 +48,10 @@ class DigitsRecognitionActivity : AppCompatActivity() {
         }
         lifecycleScope.launchWhenStarted {
             viewModel.probabilities.collect {
-                Log.e("ssss", "setObserver: " + it.joinToString { "," })
+                Log.e("Response", "setObserver: " + it.first.joinToString { "$it" })
+                showBarChart(it.first)
+                binding.paintView.clear()
+                binding.tvResult.text = "Digit : ${it.second}"
             }
         }
     }
@@ -56,10 +61,8 @@ class DigitsRecognitionActivity : AppCompatActivity() {
             btnClassify.setOnClickListener {
                 var bitmap = paintView.getBitmap()
                 ivPreview.setImageBitmap(bitmap)
-                var (probabilities, digit) = viewModel.doInference(bitmap!!)
-                tvResult.text = digit.toString()
-                showBarChart(probabilities)
-                paintView.clear()
+                viewModel.doInference(bitmap!!)
+
             }
             btnClear.setOnClickListener {
                 paintView.clear()
@@ -81,15 +84,19 @@ class DigitsRecognitionActivity : AppCompatActivity() {
                 value
             )
         }, title)
-        binding.chart.setScaleEnabled(false)
-        binding.chart.data = BarData(barDataSet)
-        binding.chart.xAxis?.let {
-            it.setAvoidFirstLastClipping(false)
-            it.position = XAxis.XAxisPosition.BOTTOM
-            it.setDrawGridLines(false)
+        binding.chart.apply {
+            visibility = View.VISIBLE
+            setScaleEnabled(false)
+            data = BarData(barDataSet)
+            xAxis?.let {
+                it.setAvoidFirstLastClipping(false)
+                it.position = XAxis.XAxisPosition.BOTTOM
+                it.setDrawGridLines(false)
+            }
+            description.isEnabled = false
+            invalidate()
         }
-        binding.chart.description.isEnabled = false
-        binding.chart.invalidate()
+
     }
 
 }

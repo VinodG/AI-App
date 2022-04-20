@@ -41,12 +41,11 @@ class DigitRecognitionViewModel @Inject constructor(
     private val modelInputSize = FLOAT_TYPE_SIZE * inputImageWidth * inputImageHeight
     private val TAG = "DigitRecognition"
 
-    //    private var interpreter = Interpreter(loadModelFromAsset()!!, 1)
-    private var interpreter: Interpreter? = null // Interpreter(loadModelFromAsset()!!, 1)
-    private var _apiResponse: MutableStateFlow<ApiStatus> = MutableStateFlow(ApiStatus.Loading)
+    private var interpreter: Interpreter? = null
+    private var _apiResponse: MutableStateFlow<ApiStatus> = MutableStateFlow(ApiStatus.None)
     var apiResponse: StateFlow<ApiStatus> = _apiResponse
-    private var _probabilities: MutableSharedFlow<List<Float>> = MutableSharedFlow()
-    var probabilities: SharedFlow<List<Float>> = _probabilities
+    private var _probabilities: MutableSharedFlow<Pair<FloatArray, Int>> = MutableSharedFlow()
+    var probabilities: SharedFlow<Pair<FloatArray, Int>> = _probabilities
 
 
     /*private fun loadModelFromAsset(): MappedByteBuffer? {
@@ -58,8 +57,8 @@ class DigitRecognitionViewModel @Inject constructor(
         return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffSet, length)
     }*/
 
-    fun doInference(bitmap: Bitmap): Pair<FloatArray, Int> {
-        return interpreter?.let { interpreter ->
+    fun doInference(bitmap: Bitmap) {
+        interpreter?.let { interpreter ->
             var bitmap = Bitmap.createScaledBitmap(
                 bitmap,
                 28,
@@ -78,12 +77,15 @@ class DigitRecognitionViewModel @Inject constructor(
             val byteBuffer = convertBitmapToByteBuffer(bitmap)
             interpreter.run(byteBuffer, result)
             viewModelScope.launch(Dispatchers.IO) {
-                _probabilities.emit(result[0].toList())
+                //_probabilities.emit(result[0].toList())
+                println(TAG + " ${result[0].map { it.toString() }.joinToString { "$it" }}")
+                _probabilities.emit(
+                    Pair(
+                        result[0],
+                        result[0].indices.maxByOrNull { result[0][it] } ?: -1))
             }
 
-            println(TAG + " ${result[0].map { it.toString() }.joinToString { "$it" }}")
-            Pair(result[0], result[0].indices.maxByOrNull { result[0][it] } ?: -1)
-        } ?: Pair(floatArrayOf(), -1)
+        }
     }
 
     private fun loadModelFromApp(filePath: String): MappedByteBuffer? {

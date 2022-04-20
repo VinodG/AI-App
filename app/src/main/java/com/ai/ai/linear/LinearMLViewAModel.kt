@@ -6,10 +6,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ai.ai.data.Repo
-import com.google.firebase.FirebaseApp
-import com.google.firebase.ml.modeldownloader.CustomModelDownloadConditions
-import com.google.firebase.ml.modeldownloader.DownloadType
-import com.google.firebase.ml.modeldownloader.FirebaseModelDownloader
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -27,34 +23,18 @@ class LinearMLViewAModel @Inject constructor(
     var repo: Repo
 ) : ViewModel() {
     private val TAG = "LinearMLViewAModel"
-    private var interpreter = Interpreter(loadModelFromAsset()!!, 1)
+    private var interpreter: Interpreter? = null
 
     var isLoading = mutableStateOf(false)
 
-
-    private fun loadModelFromAsset(): MappedByteBuffer? {
-        var assetFileDescriptor = context.assets.openFd("linear2.tflite")
-        var fileInputStream = FileInputStream(assetFileDescriptor.fileDescriptor)
-        var fileChannel = fileInputStream.channel
-        var startOffSet = assetFileDescriptor.startOffset
-        var length = assetFileDescriptor.length
-        return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffSet, length)
-    }
-
     fun loadFromAsset() {
-        interpreter = Interpreter(loadModelFromAsset()!!, 1)
     }
 
     fun doInference(predict_x: Float): Float {
-//        /*
-//
         var floatArray = floatArrayOf(1.0f)
         floatArray[0] = predict_x
         var outarray = Array(1) { floatArray }
-//        var floatArray = StaticType.get1Dim()
-//        floatArray[0] = predict_x
-//        var outarray = StaticType.get2Dim()
-        interpreter.run(floatArray, outarray)
+        interpreter?.run(floatArray, outarray)
         println(outarray[0][0])
         return outarray[0][0]
     }
@@ -78,11 +58,18 @@ class LinearMLViewAModel @Inject constructor(
         return mappedByteBuffer
     }
 
-    fun downloadModel() {
+    fun downloadModel(verson: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             isLoading.value = true
             try {
-                FirebaseApp.initializeApp(context)
+                try {
+                    repo.download(version = verson)?.let {
+                        interpreter = Interpreter(loadModelFromApp(it)!!, 1)
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, " Not downloaded : ${e.message.toString()}")
+                }
+                /*FirebaseApp.initializeApp(context)
                 val conditions = CustomModelDownloadConditions.Builder()
                     .requireWifi()
                     .build()
@@ -102,7 +89,7 @@ class LinearMLViewAModel @Inject constructor(
                         Log.e(TAG, "downloadModel:  onCancel ")
                     }.addOnFailureListener {
                         Log.e(TAG, "downloadModel: onError ${it.message.toString()}")
-                    }
+                    }*/
             } catch (e: Exception) {
                 e.printStackTrace()
                 Log.e(TAG, " Not downloaded : ${e.message.toString()}")
